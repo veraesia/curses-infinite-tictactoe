@@ -9,25 +9,20 @@ curses.noecho()
 curses.cbreak()
 stdscr.keypad(True)
 
-#persistent variables
+#curses general/debug variables
 caught_input = ""
 
 height = curses.LINES
 width = curses.COLS
 
+#board setup
 board_win = curses.newwin(24, 40, 1, 8)
 info_win = curses.newwin(12, 14, 1, 48)
+
+#logic tracking setup
 value_matrix = [[0,0,0],[0,0,0],[0,0,0]]
 cursor_matrix = [[],[],[]]
 mark_matrix = [[],[],[]]
-
-cursor_pos = [1,1]
-count_flag = False
-turn_swap = True
-turn_count = 0
-reset_flag = False
-reset_wait = False
-winner = 0
 
 for i in range(0, 3):
 	for j in range(0, 3):
@@ -38,6 +33,15 @@ for i in range(0, 3):
 	for j in range(0, 3):
 		temp = curses.newwin(5, 6, (i*6)+3, (j*12)+12)
 		mark_matrix[i].append(temp)
+
+#general gameplay variables
+cursor_pos = [1,1]
+count_flag = False
+turn_swap = True
+turn_count = 0
+reset_flag = False
+reset_wait = False
+winner = 0
 
 while(True):
 
@@ -165,10 +169,14 @@ while(True):
 
 	#user input start
 	usr_input = stdscr.getch()
+
+	#quit/reset
 	if (usr_input == ord('q')):
 		break
 	elif (usr_input == ord('r')):
 		reset_flag = True
+
+	#directional keys
 	elif (usr_input == 0x102): #down key
 		if (cursor_pos[0] < 2):
 			cursor_pos[0] = cursor_pos[0] + 1
@@ -182,6 +190,7 @@ while(True):
 		if (cursor_pos[1] > 0):
 			cursor_pos[1] = cursor_pos[1] - 1
 
+	#claiming a square
 	elif ((usr_input == ord('z')) and not(reset_wait)):
 		if (value_matrix[cursor_pos[0]][cursor_pos[1]] == 0):
 			if (turn_swap):
@@ -193,6 +202,7 @@ while(True):
 			turn_swap = not(turn_swap)
 			turn_count = turn_count + 1
 
+	#debug catch input
 	caught_input = str(hex(usr_input))
 	#end of main loop
 
